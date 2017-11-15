@@ -21,6 +21,8 @@
             android:parentActivityName="com.baking.mm.bakingapp.MainActivity"></activity>
         <activity android:name=".RecipeStepsNav"
             android:parentActivityName="com.baking.mm.bakingapp.RecipeDetails"></activity>
+        <activity android:name=".RecipeIngredientsList"
+            android:parentActivityName="com.baking.mm.bakingapp.RecipeDetails"></activity>
     </application>
 
 </manifest>

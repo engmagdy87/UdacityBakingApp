@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tv_recipe_ingredients_list"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frame_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fontFamily="sans-serif-smallcaps"
-    android:padding="20dp"
-    android:textSize="30sp" />
+    android:layout_height="match_parent"
+    tools:context="com.baking.mm.bakingapp.RecipeIngredientsList">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_recipes_Ingredients_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+</FrameLayout>

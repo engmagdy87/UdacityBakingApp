@@ -115,6 +115,17 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
 
     public void onClickIngredients(View view){
         Log.v("tagging","Ingredients CLICKED");
+        Context context = this;
+        Class destinationActivity = RecipeIngredientsList.class;
+        Intent intent = new Intent(context, destinationActivity);
+
+        Bundle extras = new Bundle();
+        extras.putString("name",recipeName);
+        extras.putParcelableArrayList("ingredients", (ArrayList<? extends Parcelable>) recipeIngredients);
+
+        intent.putExtras(extras);
+
+        startActivity(intent);
     }
 
 }
