@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.baking.mm.bakingapp.adapters.RecipeDetailsAdapter;
 import com.baking.mm.bakingapp.pojo.RecipeIngredient;
 import com.baking.mm.bakingapp.pojo.RecipeSteps;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,9 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
     List<RecipeIngredient> recipeIngredients;
     private TextView ingredients;
     TextView steps;
-
+    private static final String ONSAVEINSTANCESTATE_RECIPENAME_KEY = "recipeName";
+    private static final String ONSAVEINSTANCESTATE_RECIPES_KEY = "recipes";
+    private static final String ONSAVEINSTANCESTATE_INGREDIENTS_KEY = "ingredients";
     private RecipeDetailsAdapter recipeAdapter = new RecipeDetailsAdapter(this);
 
     @Override
@@ -49,29 +52,16 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
 
 
         if (savedInstanceState != null) {
-//            if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_REVIEWS_KEY) && savedInstanceState.containsKey(ONSAVEINSTANCESTATE_TRAILERS_KEY)) {
+            if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPENAME_KEY)) {
+                recipeName = savedInstanceState.getString(ONSAVEINSTANCESTATE_RECIPENAME_KEY);
+                allRecipeSteps = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY);
+                recipeIngredients = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_INGREDIENTS_KEY);
 
-//                gMovieTrailers = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_TRAILERS_KEY);
-//                gMovieReviews = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_REVIEWS_KEY);
-//                trailersAdapter.setMovieTrailer(gMovieTrailers);
-//                reviewsAdapter.setMovieReview(gMovieReviews);
-//                id = savedInstanceState.getString("id");
-//
-//                MovieTitle = savedInstanceState.getString("title");
-//                title.setText(MovieTitle);
-//
-//                MovieReleaseDate = savedInstanceState.getString("release_date");
-//                release_date.setText(MovieReleaseDate.substring(0, MovieReleaseDate.indexOf("-")));
-//
-//                MovieRating = savedInstanceState.getString("rate");
-//                rating.setText(MovieRating+"/10");
-//
-//                MovieDesc = savedInstanceState.getString("description");
-//                description.setText(MovieDesc);
-//
-//                MoviePoster = savedInstanceState.getString("poster");
-//                Picasso.with(context).load(MoviePoster).into(poster);
-//            }
+                getSupportActionBar().setTitle(recipeName);
+                ingredients.setText(recipeName + " Ingredients");
+
+                recipeAdapter.setRecipe(allRecipeSteps);
+            }
 
         } else {
 
@@ -97,6 +87,14 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY, recipeName);
+        outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY, (ArrayList<? extends Parcelable>) allRecipeSteps);
+        outState.putParcelableArrayList(ONSAVEINSTANCESTATE_INGREDIENTS_KEY, (ArrayList<? extends Parcelable>) recipeIngredients);
+    }
+
+    @Override
     public void onClick(RecipeSteps recipeSteps,int position) {
         Context context = this;
         Class destinationActivity = RecipeStepsNav.class;
@@ -114,7 +112,6 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
     }
 
     public void onClickIngredients(View view){
-        Log.v("tagging","Ingredients CLICKED");
         Context context = this;
         Class destinationActivity = RecipeIngredientsList.class;
         Intent intent = new Intent(context, destinationActivity);

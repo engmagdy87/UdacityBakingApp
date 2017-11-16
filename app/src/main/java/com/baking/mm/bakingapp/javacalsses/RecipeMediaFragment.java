@@ -49,18 +49,18 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     String path;
     View rootView;
 
-    @Nullable
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_media, container, false);
         videoView = rootView.findViewById(R.id.player_view);
-
         if (mRecipeSteps != null) {
             if (mRecipeSteps.get(index).videoURL.toString().isEmpty() || mRecipeSteps.get(index).videoURL.toString().equals(""))
-                path="";
+            path = "";
             else
-                path = mRecipeSteps.get(index).videoURL.toString();
+            path = mRecipeSteps.get(index).videoURL.toString();
         }
+
         videoPlayer(rootView);
         return rootView;
 
@@ -70,7 +70,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         this.onDestroy();
         if (mRecipeSteps != null) {
             if (mRecipeSteps.get(index).videoURL.toString().isEmpty() || mRecipeSteps.get(index).videoURL.toString().equals(""))
-                path="";
+                path = "";
             else
                 path = mRecipeSteps.get(index).videoURL.toString();
         }
@@ -85,7 +85,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         this.mRecipeSteps = mRecipeSteps;
     }
 
-    public void videoPlayer(View view){
+    public void videoPlayer(View view) {
 
         TrackSelector trackSelector = new DefaultTrackSelector();
         LoadControl loadControl = new DefaultLoadControl();
@@ -99,6 +99,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), "Android-ExoPlayer");
 
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
         MediaSource videoSource = new ExtractorMediaSource(Uri.parse(path), dataSourceFactory, extractorsFactory, null, null);
 
         player.addListener(this);
@@ -114,6 +115,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
             player.setPlayWhenReady(false);
         }
     }
+
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 
@@ -159,4 +161,5 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         super.onDestroy();
         player.release();
     }
+
 }

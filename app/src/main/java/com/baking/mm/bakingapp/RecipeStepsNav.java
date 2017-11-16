@@ -1,6 +1,7 @@
 package com.baking.mm.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -51,17 +52,37 @@ import java.util.List;
 public class RecipeStepsNav extends AppCompatActivity {
     ArrayList<RecipeSteps> recipeSteps;
     private String recipeName;
+    int index = 0;
+
+    TextView counter;
     Button next;
     Button previous;
-    TextView counter;
-    int index = 0;
+
+    private static final String ONSAVEINSTANCESTATE_RECIPESTEPS_KEY = "steps";
+    private static final String ONSAVEINSTANCESTATE_STEP_INDEX_KEY = "index";
+    private static final String ONSAVEINSTANCESTATE_RECIPENAME_KEY = "recipename";
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPESTEPS_KEY, recipeSteps);
+        outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY,recipeName);
+        outState.putInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY,index);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_step_browsing);
 
-
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPENAME_KEY)) {
+                recipeName = savedInstanceState.getString(ONSAVEINSTANCESTATE_RECIPENAME_KEY);
+                recipeSteps = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPESTEPS_KEY);
+                index = savedInstanceState.getInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY);
+                getSupportActionBar().setTitle(recipeName);
+            }
+        } else {
         Intent myIntent = getIntent();
 
         Bundle extras = myIntent.getExtras();
@@ -74,9 +95,10 @@ public class RecipeStepsNav extends AppCompatActivity {
                 recipeSteps = myIntent.getParcelableArrayListExtra("steps");
             }
             if (extras.containsKey("clicked_item")) {
-                index = myIntent.getIntExtra("clicked_item",0);
+                index = myIntent.getIntExtra("clicked_item", 0);
             }
         }
+    }
 
         final RecipeMediaFragment recipeMediaFragment = new RecipeMediaFragment();
         recipeMediaFragment.setRecipeVideo(recipeSteps);
@@ -122,7 +144,6 @@ public class RecipeStepsNav extends AppCompatActivity {
             }
         });
 
-
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         fragmentManager.beginTransaction()
@@ -131,4 +152,5 @@ public class RecipeStepsNav extends AppCompatActivity {
         fragmentManager.beginTransaction()
                 .add(R.id.step_container, recipeStepsFragment).commit();
     }
+    
 }
