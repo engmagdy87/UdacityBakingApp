@@ -7,10 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.baking.mm.bakingapp.adapters.RecipeDetailsAdapter;
 import com.baking.mm.bakingapp.adapters.RecipeIngredientsAdapter;
 import com.baking.mm.bakingapp.pojo.RecipeIngredient;
+import com.baking.mm.bakingapp.widget.UpdateBakingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,11 @@ public class RecipeIngredientsList extends AppCompatActivity {
                 getSupportActionBar().setTitle(recipeName);
                 recyclerView.setAdapter(ingredientAdapter);
                 ingredientAdapter.setIngredients(recipeIngredients);
+                ArrayList<String> listIngStr = null;
+                for (int i = 0 ; i < recipeIngredients.size();i++){
+                    listIngStr.add(recipeIngredients.get(i).quantity + " " + recipeIngredients.get(i).measure + " " + recipeIngredients.get(i).ingredient);
+                }
+                UpdateBakingService.startBakingService(this,listIngStr);
             }
 
         } else {
@@ -71,6 +78,11 @@ public class RecipeIngredientsList extends AppCompatActivity {
             }
             recyclerView.setAdapter(ingredientAdapter);
             ingredientAdapter.setIngredients(recipeIngredients);
+            ArrayList<String> listIngStr = new ArrayList<String>(recipeIngredients.size());
+            for (int i = 0 ; i < recipeIngredients.size();i++){
+                listIngStr.add(recipeIngredients.get(i).quantity + " " + recipeIngredients.get(i).measure + " " + recipeIngredients.get(i).ingredient);
+            }
+            UpdateBakingService.startBakingService(this,listIngStr);
         }
 
     }

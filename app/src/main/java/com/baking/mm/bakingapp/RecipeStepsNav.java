@@ -121,6 +121,7 @@ public class RecipeStepsNav extends AppCompatActivity {
                 } else {
                     index = 0;
                 }
+
                 recipeStepsFragment.setIndex(index);
                 recipeStepsFragment.changeFragment();
                 recipeMediaFragment.setIndex(index);
@@ -136,6 +137,7 @@ public class RecipeStepsNav extends AppCompatActivity {
                 } else {
                     index = recipeSteps.size()-1;
                 }
+
                 recipeStepsFragment.setIndex(index);
                 recipeStepsFragment.changeFragment();
                 recipeMediaFragment.setIndex(index);
@@ -147,10 +149,16 @@ public class RecipeStepsNav extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         fragmentManager.beginTransaction()
-                .add(R.id.media_container, recipeMediaFragment).commit();
+                .replace(R.id.media_container, recipeMediaFragment).commit();
 
         fragmentManager.beginTransaction()
-                .add(R.id.step_container, recipeStepsFragment).commit();
+                .replace(R.id.step_container, recipeStepsFragment).commit();
     }
-    
+
+    public List<RecipeSteps> getRecipes(){
+        return recipeSteps;
+    }
+    public int getIndex(){
+        return index;
+    }
 }

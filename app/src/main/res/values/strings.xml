@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Baking App</string>
+    <string name="initial_ingredient">Ingredients will be available after app starts</string>
+    <string name="add_widget">Add widget</string>
 </resources>

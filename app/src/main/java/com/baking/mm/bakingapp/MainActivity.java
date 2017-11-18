@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,34 +31,59 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     private ProgressBar loadingIndicator;
     private static final String ONSAVEINSTANCESTATE_RECIPES_KEY = "recipes";
 
+
+
     private RecipeCardAdapter recipeAdapter = new RecipeCardAdapter(this, this);
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY,mRecipeInfo);
+        outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY, mRecipeInfo);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = findViewById(R.id.recyclerview_recipes);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(recipeAdapter);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPES_KEY)) {
-                mRecipeInfo = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY);
-                recipeAdapter.setRecipe(mRecipeInfo);
+
+        if (findViewById(R.id.fragment_recipes_list_two_panes) != null) {
+            recyclerView = findViewById(R.id.recyclerview_recipes);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setAdapter(recipeAdapter);
+            if (savedInstanceState != null) {
+                if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPES_KEY)) {
+                    mRecipeInfo = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY);
+                    recipeAdapter.setRecipe(mRecipeInfo);
+                }
+
+            } else {
+                getRecipes();
+                loadingIndicator = findViewById(R.id.pb_loading_indicator);
+                loadingIndicator.setVisibility(View.VISIBLE);
             }
 
         } else {
-        getRecipes();
-        loadingIndicator = findViewById(R.id.pb_loading_indicator);
-        loadingIndicator.setVisibility(View.VISIBLE);
-    }
+            recyclerView = findViewById(R.id.recyclerview_recipes);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setAdapter(recipeAdapter);
+            if (savedInstanceState != null) {
+                if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPES_KEY)) {
+                    mRecipeInfo = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY);
+                    recipeAdapter.setRecipe(mRecipeInfo);
+                }
+
+            } else {
+                getRecipes();
+                loadingIndicator = findViewById(R.id.pb_loading_indicator);
+                loadingIndicator.setVisibility(View.VISIBLE);
+            }
+        }
+
+
     }
 
     private void getRecipes() {
@@ -84,18 +110,20 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
 
     @Override
     public void onClick(RecipeInfo recipeInfo) {
-        Context context = this;
-        Class destinationActivity = RecipeDetails.class;
-        Intent intent = new Intent(context, destinationActivity);
 
-        Bundle extras = new Bundle();
+            Context context = this;
+            Class destinationActivity = RecipeDetails.class;
+            Intent intent = new Intent(context, destinationActivity);
 
-        extras.putString("name", recipeInfo.name);
-        extras.putParcelableArrayList("ingredients", (ArrayList<? extends Parcelable>) recipeInfo.ingredients);
-        extras.putParcelableArrayList("steps", (ArrayList<? extends Parcelable>) recipeInfo.steps);
+            Bundle extras = new Bundle();
 
-        intent.putExtras(extras);
-        startActivity(intent);
+            extras.putString("name", recipeInfo.name);
+            extras.putParcelableArrayList("ingredients", (ArrayList<? extends Parcelable>) recipeInfo.ingredients);
+            extras.putParcelableArrayList("steps", (ArrayList<? extends Parcelable>) recipeInfo.steps);
+
+            intent.putExtras(extras);
+            startActivity(intent);
+
     }
 
     @Override
@@ -107,4 +135,5 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     public void onFailure(Call<ArrayList<RecipeInfo>> call, Throwable t) {
 
     }
+
 }

@@ -12,24 +12,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
-                <action
-                    android:name="android.intent.action.MAIN"
-                    android:launchMode="singleTop" />
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".RecipeDetails"
             android:launchMode="singleTop"
-            android:parentActivityName="com.baking.mm.bakingapp.MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".RecipeStepsNav"
-            android:parentActivityName="com.baking.mm.bakingapp.RecipeDetails"></activity>
+            android:parentActivityName=".RecipeDetails" />
         <activity
             android:name=".RecipeIngredientsList"
-            android:parentActivityName="com.baking.mm.bakingapp.RecipeDetails"></activity>
+            android:parentActivityName=".RecipeDetails" />
+
+        <receiver android:name=".widget.BakingWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_BAKING" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/baking_widget_provider_info" />
+        </receiver>
+
+        <service android:name=".widget.UpdateBakingService" />
+        <service
+            android:name=".widget.GridWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

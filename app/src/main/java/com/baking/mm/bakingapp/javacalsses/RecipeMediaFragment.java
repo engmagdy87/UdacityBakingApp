@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.baking.mm.bakingapp.R;
+import com.baking.mm.bakingapp.RecipeDetails;
+import com.baking.mm.bakingapp.RecipeStepsNav;
 import com.baking.mm.bakingapp.pojo.RecipeSteps;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -43,38 +46,78 @@ import java.util.List;
 public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventListener {
     public List<RecipeSteps> mRecipeSteps;
     SimpleExoPlayerView videoView;
+    ImageView imageView;
     public int index;
-
+    private boolean twoPanes;
     SimpleExoPlayer player;
     String path;
     View rootView;
+    View rootLayout;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_media, container, false);
+        rootLayout = inflater.inflate(R.layout.recipe_ingredients_steps, container, false);
         videoView = rootView.findViewById(R.id.player_view);
-        if (mRecipeSteps != null) {
-            if (mRecipeSteps.get(index).videoURL.toString().isEmpty() || mRecipeSteps.get(index).videoURL.toString().equals(""))
-            path = "";
-            else
-            path = mRecipeSteps.get(index).videoURL.toString();
+        imageView = rootView.findViewById(R.id.image_view);
+
+        if (rootLayout.findViewById(R.id.ll_two_panes) != null) {
+            twoPanes = true;
+            if (mRecipeSteps != null) {
+                setPath(mRecipeSteps);
+            } else {
+                setRecipeVideo(((RecipeDetails) getContext()).getRecipes());
+                setIndex(((RecipeDetails) getContext()).getIndex());
+                setPath(mRecipeSteps);
+            }
+        } else {
+            twoPanes = false;
+            if (mRecipeSteps != null) {
+                setPath(mRecipeSteps);
+            } else {
+                setRecipeVideo(((RecipeStepsNav) getContext()).getRecipes());
+                setIndex(((RecipeStepsNav) getContext()).getIndex());
+                setPath(mRecipeSteps);
+            }
         }
 
-        videoPlayer(rootView);
+        if (path.equals("")) {Log.i("tagging","empty");
+            imageView.setVisibility(View.VISIBLE);
+            videoView.setVisibility(View.INVISIBLE);
+        } else {
+            imageView.setVisibility(View.INVISIBLE);
+            videoView.setVisibility(View.VISIBLE);
+            videoPlayer(rootView);
+        }
         return rootView;
-
     }
 
     public void changeFragment() {
         this.onDestroy();
         if (mRecipeSteps != null) {
-            if (mRecipeSteps.get(index).videoURL.toString().isEmpty() || mRecipeSteps.get(index).videoURL.toString().equals(""))
-                path = "";
-            else
-                path = mRecipeSteps.get(index).videoURL.toString();
+            setPath(mRecipeSteps);
+        } else {
+            setRecipeVideo(((RecipeStepsNav) getContext()).getRecipes());
+            setIndex(((RecipeStepsNav) getContext()).getIndex());
+            setPath(mRecipeSteps);
         }
-        videoPlayer(rootView);
+        if (path.equals("")) {
+            imageView.setVisibility(View.VISIBLE);
+            videoView.setVisibility(View.GONE);
+        } else {
+            imageView.setVisibility(View.GONE);
+            videoView.setVisibility(View.VISIBLE);
+            videoPlayer(rootView);
+        }
+
+    }
+
+    public void setPath(List<RecipeSteps> mRecipeSteps) {
+        if (mRecipeSteps.get(index).videoURL.toString().isEmpty() || mRecipeSteps.get(index).videoURL.toString().equals(""))
+            path = "";
+        else
+            path = mRecipeSteps.get(index).videoURL.toString();
     }
 
     public void setIndex(int index) {
@@ -159,7 +202,14 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        player.release();
+        if(!path.equals(""))
+            player.release();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(!path.equals(""))
+            player.release();
+    }
 }
