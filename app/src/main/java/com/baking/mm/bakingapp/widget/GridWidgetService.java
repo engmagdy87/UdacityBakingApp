@@ -17,7 +17,7 @@ import static com.baking.mm.bakingapp.widget.BakingWidgetProvider.ingredientsLis
  */
 
 public class GridWidgetService extends RemoteViewsService {
-    List<String> remoteIngList;
+    List<String> remoteIngredientsList;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -40,7 +40,7 @@ public class GridWidgetService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            remoteIngList = ingredientsList;
+            remoteIngredientsList = ingredientsList;
         }
 
         @Override
@@ -51,13 +51,13 @@ public class GridWidgetService extends RemoteViewsService {
         @Override
         public int getCount() {
 
-            return remoteIngList.size();
+            return remoteIngredientsList.size();
         }
 
         @Override
         public RemoteViews getViewAt(int position) {
             RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.widget_grid_layout_item);
-            views.setTextViewText(R.id.widget_grid_item, remoteIngList.get(position));
+            views.setTextViewText(R.id.widget_grid_item, remoteIngredientsList.get(position));
             return views;
         }
 

@@ -30,14 +30,14 @@ public class UpdateBakingService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             ArrayList<String> fromActivityIngredientsList = intent.getExtras().getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
-            handleActionUpdateBakingWidgets(fromActivityIngredientsList);
+            handleUpdateWidgets(fromActivityIngredientsList);
         }
     }
 
-    private void handleActionUpdateBakingWidgets(ArrayList<String> fromActivityIngredientsList) {
+    private void handleUpdateWidgets(ArrayList<String> ingredientsList) {
         Intent intent = new Intent("android.appwidget.action.APPWIDGET_UPDATE_BAKING");
         intent.setAction("android.appwidget.action.APPWIDGET_UPDATE_BAKING");
-        intent.putExtra(FROM_ACTIVITY_INGREDIENTS_LIST, fromActivityIngredientsList);
+        intent.putExtra(FROM_ACTIVITY_INGREDIENTS_LIST, ingredientsList);
         sendBroadcast(intent);
     }
 

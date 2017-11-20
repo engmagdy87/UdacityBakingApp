@@ -27,14 +27,14 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, BakingWidgetProvider.class));
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+        int[] widgetIds = widgetManager.getAppWidgetIds(new ComponentName(context, BakingWidgetProvider.class));
 
         final String action = intent.getAction();
         if (action.equals("android.appwidget.action.APPWIDGET_UPDATE_BAKING")) {
             ingredientsList = intent.getExtras().getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_grid_layout);
-            BakingWidgetProvider.updateBakingWidgets(context, appWidgetManager, appWidgetIds);
+            widgetManager.notifyAppWidgetViewDataChanged(widgetIds, R.id.widget_grid_layout);
+            BakingWidgetProvider.updateBakingWidgets(context, widgetManager, widgetIds);
             super.onReceive(context, intent);
         }
     }
@@ -44,8 +44,8 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_grid_layout);
         Intent appIntent = new Intent(context, RecipeDetails.class);
-        PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setPendingIntentTemplate(R.id.widget_grid_layout, appPendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.widget_grid_layout, pendingIntent);
 
         Intent intent = new Intent(context, GridWidgetService.class);
         views.setRemoteAdapter(R.id.widget_grid_layout, intent);
