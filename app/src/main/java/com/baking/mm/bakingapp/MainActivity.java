@@ -5,18 +5,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.baking.mm.bakingapp.IdlingResource.SimpleIdlingResource;
 import com.baking.mm.bakingapp.adapters.RecipeCardAdapter;
 import com.baking.mm.bakingapp.pojo.RecipeInfo;
 import com.baking.mm.bakingapp.networkhelpers.NetworkUtils;
-import com.squareup.picasso.Picasso;
+import com.baking.mm.bakingapp.IdlingResource.SimpleIdlingResource;
 
 import java.util.ArrayList;
 
@@ -31,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     private ProgressBar loadingIndicator;
     private static final String ONSAVEINSTANCESTATE_RECIPES_KEY = "recipes";
 
-
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
 
     private RecipeCardAdapter recipeAdapter = new RecipeCardAdapter(this, this);
 
@@ -83,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
             }
         }
 
-
+        getIdlingResource();
     }
 
     private void getRecipes() {
@@ -103,7 +111,10 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
 
             @Override
             public void onFailure(Call<ArrayList<RecipeInfo>> call, Throwable t) {
-
+                recyclerView.setVisibility(View.INVISIBLE);
+                loadingIndicator.setVisibility(View.INVISIBLE);
+                Toast.makeText(MainActivity.this, "An internet connection error. Please try again",
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -135,5 +146,12 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     public void onFailure(Call<ArrayList<RecipeInfo>> call, Throwable t) {
 
     }
-
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
 }
