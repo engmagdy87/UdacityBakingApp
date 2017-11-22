@@ -78,9 +78,11 @@ public class RecipeIngredientsList extends AppCompatActivity {
             recyclerView.setAdapter(ingredientAdapter);
             ingredientAdapter.setIngredients(recipeIngredients);
             listIngStr = new ArrayList<String>(recipeIngredients.size());
+            for (int i = 0 ; i < recipeIngredients.size();i++){
+                listIngStr.add(recipeIngredients.get(i).quantity + " " + recipeIngredients.get(i).measure + " " + recipeIngredients.get(i).ingredient);
+            }
             UpdateBakingService.startBakingService(this,listIngStr);
         }
-
     }
     }
 }

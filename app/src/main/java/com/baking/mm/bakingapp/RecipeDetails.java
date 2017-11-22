@@ -46,8 +46,6 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
     private static final String ONSAVEINSTANCESTATE_INGREDIENTS_KEY = "ingredients";
     private RecipeDetailsAdapter recipeAdapter = new RecipeDetailsAdapter(this);
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
