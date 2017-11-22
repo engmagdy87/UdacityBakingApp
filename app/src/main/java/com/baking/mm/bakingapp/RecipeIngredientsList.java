@@ -25,6 +25,7 @@ public class RecipeIngredientsList extends AppCompatActivity {
     String recipeName;
     List<RecipeIngredient> recipeIngredients;
     RecyclerView recyclerView;
+    ArrayList<String> listIngStr = null;
     private static final String ONSAVEINSTANCESTATE_RECIPENAME_KEY = "recipeName";
     private static final String ONSAVEINSTANCESTATE_INGREDIENTS_KEY = "ingredients";
 
@@ -35,6 +36,7 @@ public class RecipeIngredientsList extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY,recipeName);
         outState.putParcelableArrayList(ONSAVEINSTANCESTATE_INGREDIENTS_KEY, (ArrayList<? extends Parcelable>) recipeIngredients);
+        outState.putStringArrayList("TEMPLIST", listIngStr);
     }
 
     @Override
@@ -53,13 +55,10 @@ public class RecipeIngredientsList extends AppCompatActivity {
             if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPENAME_KEY)) {
                 recipeName = savedInstanceState.getString(ONSAVEINSTANCESTATE_RECIPENAME_KEY);
                 recipeIngredients = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_INGREDIENTS_KEY);
+                listIngStr = savedInstanceState.getStringArrayList("TEMPLIST");
                 getSupportActionBar().setTitle(recipeName);
                 recyclerView.setAdapter(ingredientAdapter);
                 ingredientAdapter.setIngredients(recipeIngredients);
-                ArrayList<String> listIngStr = null;
-                for (int i = 0 ; i < recipeIngredients.size();i++){
-                    listIngStr.add(recipeIngredients.get(i).quantity + " " + recipeIngredients.get(i).measure + " " + recipeIngredients.get(i).ingredient);
-                }
                 UpdateBakingService.startBakingService(this,listIngStr);
             }
 
@@ -78,10 +77,7 @@ public class RecipeIngredientsList extends AppCompatActivity {
             }
             recyclerView.setAdapter(ingredientAdapter);
             ingredientAdapter.setIngredients(recipeIngredients);
-            ArrayList<String> listIngStr = new ArrayList<String>(recipeIngredients.size());
-            for (int i = 0 ; i < recipeIngredients.size();i++){
-                listIngStr.add(recipeIngredients.get(i).quantity + " " + recipeIngredients.get(i).measure + " " + recipeIngredients.get(i).ingredient);
-            }
+            listIngStr = new ArrayList<String>(recipeIngredients.size());
             UpdateBakingService.startBakingService(this,listIngStr);
         }
 

@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.baking.mm.bakingapp.IdlingResource.SimpleIdlingResource;
 import com.baking.mm.bakingapp.adapters.RecipeDetailsAdapter;
 import com.baking.mm.bakingapp.javacalsses.RecipeMediaFragment;
 import com.baking.mm.bakingapp.javacalsses.RecipeStepFragment;
@@ -41,10 +46,13 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
     private static final String ONSAVEINSTANCESTATE_INGREDIENTS_KEY = "ingredients";
     private RecipeDetailsAdapter recipeAdapter = new RecipeDetailsAdapter(this);
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_ingredients_steps);
+
 
         ingredients = findViewById(R.id.tv_recipe_ingredients);
         steps = findViewById(R.id.tv_recipe_steps);

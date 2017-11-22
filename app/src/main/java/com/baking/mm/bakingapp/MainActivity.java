@@ -37,11 +37,23 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     private RecyclerView recyclerView;
     private ProgressBar loadingIndicator;
     private static final String ONSAVEINSTANCESTATE_RECIPES_KEY = "recipes";
+    SimpleIdlingResource idlingResource = (SimpleIdlingResource)getIdlingResource();
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
+
 
     @Nullable
     private SimpleIdlingResource mIdlingResource;
 
     private RecipeCardAdapter recipeAdapter = new RecipeCardAdapter(this, this);
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -53,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         if (findViewById(R.id.fragment_recipes_list_two_panes) != null) {
             recyclerView = findViewById(R.id.recyclerview_recipes);
@@ -90,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
                 loadingIndicator.setVisibility(View.VISIBLE);
             }
         }
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
 
         getIdlingResource();
     }
@@ -106,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
                     mRecipeInfo = recipeInfo;
                     recipeAdapter.setRecipe(recipeInfo);
                     loadingIndicator.setVisibility(View.INVISIBLE);
+                    if (idlingResource != null) {
+                        idlingResource.setIdleState(true);
+                    }
                 }
             }
 
@@ -146,12 +166,5 @@ public class MainActivity extends AppCompatActivity implements RecipeCardAdapter
     public void onFailure(Call<ArrayList<RecipeInfo>> call, Throwable t) {
 
     }
-    @VisibleForTesting
-    @NonNull
-    public IdlingResource getIdlingResource() {
-        if (mIdlingResource == null) {
-            mIdlingResource = new SimpleIdlingResource();
-        }
-        return mIdlingResource;
-    }
+
 }

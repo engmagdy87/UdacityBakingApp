@@ -1,5 +1,7 @@
 package com.baking.mm.bakingapp;
 
+import org.junit.runner.RunWith;
+import org.junit.runner.RunWith;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
@@ -18,6 +20,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+
 
 /**
  * Created by MM on 11/19/2017.
@@ -40,13 +43,14 @@ public class MainActivityTest {
     public void checkRecipesActivity() {
         onView(ViewMatchers.withId(R.id.recyclerview_recipes)).perform(RecyclerViewActions.scrollToPosition(1));
         onView(withText("Brownies")).check(matches(isDisplayed()));
-    }
 
+    }
+//
     @Test
     public void checkVideoPlayerAppear() {
         onView(ViewMatchers.withId(R.id.recyclerview_recipes)).perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));
         onView(ViewMatchers.withId(R.id.recyclerview_recipes_details)).perform(RecyclerViewActions.actionOnItemAtPosition(2,click()));
-        onView(ViewMatchers.withId(R.id.player_view)).check(matches(isDisplayed()));
+        onView(ViewMatchers.withId(R.id.details_RL)).check(matches(isDisplayed()));
     }
 
     @After
@@ -55,4 +59,5 @@ public class MainActivityTest {
             Espresso.unregisterIdlingResources(mIdlingResource);
         }
     }
+
 }
