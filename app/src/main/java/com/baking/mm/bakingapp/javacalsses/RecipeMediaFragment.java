@@ -196,8 +196,13 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         super.onPause();
         if (player != null) {
             player.setPlayWhenReady(false);
-            ((RecipeStepsNav) getActivity()).playerPosition = player.getCurrentPosition();
-            ((RecipeStepsNav) getActivity()).path = path;
+            if (twoPanes) {
+                ((RecipeDetails) getActivity()).playerPosition = player.getCurrentPosition();
+                ((RecipeDetails) getActivity()).path = path;
+            } else {
+                ((RecipeStepsNav) getActivity()).playerPosition = player.getCurrentPosition();
+                ((RecipeStepsNav) getActivity()).path = path;
+            }
             player.release();
         }
     }

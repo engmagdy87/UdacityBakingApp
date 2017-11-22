@@ -48,8 +48,8 @@ public class RecipeStepsNav extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPESTEPS_KEY, recipeSteps);
         outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY, recipeName);
-        outState.putString("VIDEOPATH", path);
         outState.putInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY, index);
+        outState.putString("VIDEOPATH", path);
         outState.putLong("PLAYERPOSITION", playerPosition);
     }
 
@@ -61,10 +61,10 @@ public class RecipeStepsNav extends AppCompatActivity {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPENAME_KEY)) {
                 recipeName = savedInstanceState.getString(ONSAVEINSTANCESTATE_RECIPENAME_KEY);
-                path = savedInstanceState.getString("VIDEOPATH");
                 recipeSteps = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPESTEPS_KEY);
                 index = savedInstanceState.getInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY);
                 playerPosition = savedInstanceState.getLong("PLAYERPOSITION");
+                path = savedInstanceState.getString("VIDEOPATH");
                 getSupportActionBar().setTitle(recipeName);
             }
         } else {

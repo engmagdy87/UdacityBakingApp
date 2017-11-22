@@ -40,6 +40,8 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
     List<RecipeIngredient> recipeIngredients;
     private TextView ingredients;
     TextView steps;
+    public long playerPosition = 0;
+    public String path="";
     private boolean twoPanes;
     private static final String ONSAVEINSTANCESTATE_RECIPENAME_KEY = "recipeName";
     private static final String ONSAVEINSTANCESTATE_RECIPES_KEY = "recipes";
@@ -72,6 +74,8 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
                 recipeName = savedInstanceState.getString(ONSAVEINSTANCESTATE_RECIPENAME_KEY);
                 allRecipeSteps = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY);
                 recipeIngredients = savedInstanceState.getParcelableArrayList(ONSAVEINSTANCESTATE_INGREDIENTS_KEY);
+                playerPosition = savedInstanceState.getLong("PLAYERPOSITION");
+                path = savedInstanceState.getString("VIDEOPATH");
 
                 getSupportActionBar().setTitle(recipeName);
                 ingredients.setText(recipeName + " Ingredients");
@@ -110,12 +114,15 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
         outState.putInt("index",index);
         outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPES_KEY, (ArrayList<? extends Parcelable>) allRecipeSteps);
         outState.putParcelableArrayList(ONSAVEINSTANCESTATE_INGREDIENTS_KEY, (ArrayList<? extends Parcelable>) recipeIngredients);
+        outState.putString("VIDEOPATH", path);
+        outState.putLong("PLAYERPOSITION", playerPosition);
     }
 
     @Override
     public void onClick(RecipeSteps recipeSteps, int position) {
     index = position;
         if (twoPanes) {
+            playerPosition = 0;
             showVideoDetails(position);
         } else {
             Context context = this;
@@ -155,7 +162,7 @@ public class RecipeDetails extends AppCompatActivity implements RecipeDetailsAda
         return index;
     }
     public void showVideoDetails(int position){
-        final RecipeMediaFragment recipeMediaFragment = new RecipeMediaFragment();
+        final RecipeMediaFragment recipeMediaFragment = new RecipeMediaFragment(playerPosition,path);
         recipeMediaFragment.setRecipeVideo(allRecipeSteps);
         recipeMediaFragment.setIndex(position);
 
