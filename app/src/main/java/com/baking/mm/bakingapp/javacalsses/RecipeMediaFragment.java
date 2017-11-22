@@ -1,8 +1,13 @@
 package com.baking.mm.bakingapp.javacalsses;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +19,7 @@ import com.baking.mm.bakingapp.R;
 import com.baking.mm.bakingapp.RecipeDetails;
 import com.baking.mm.bakingapp.RecipeStepsNav;
 import com.baking.mm.bakingapp.pojo.RecipeSteps;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -36,6 +42,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -47,12 +54,20 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     public List<RecipeSteps> mRecipeSteps;
     SimpleExoPlayerView videoView;
     ImageView imageView;
+    long playerPosition = 0;
     public int index;
     private boolean twoPanes;
     SimpleExoPlayer player;
     String path;
     View rootView;
     View rootLayout;
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("PLAYERPOSITION", playerPosition);
+        outState.putString("VIDEOPATH", path);
+    }
 
 
     @Override
@@ -62,34 +77,51 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         videoView = rootView.findViewById(R.id.player_view);
         imageView = rootView.findViewById(R.id.image_view);
 
-        if (rootLayout.findViewById(R.id.ll_two_panes) != null) {
-            twoPanes = true;
-            if (mRecipeSteps != null) {
-                setPath(mRecipeSteps);
-            } else {
-                setRecipeVideo(((RecipeDetails) getContext()).getRecipes());
-                setIndex(((RecipeDetails) getContext()).getIndex());
-                setPath(mRecipeSteps);
-            }
+        if (savedInstanceState != null) {
+            playerPosition = savedInstanceState.getLong("PLAYERPOSITION");
+            path = savedInstanceState.getString("VIDEOPATH");
         } else {
-            twoPanes = false;
-            if (mRecipeSteps != null) {
-                setPath(mRecipeSteps);
+            if (rootLayout.findViewById(R.id.ll_two_panes) != null) {
+                twoPanes = true;
+                if (mRecipeSteps != null) {
+                    setPath(mRecipeSteps);
+                } else {
+                    setRecipeVideo(((RecipeDetails) getContext()).getRecipes());
+                    setIndex(((RecipeDetails) getContext()).getIndex());
+                    setPath(mRecipeSteps);
+                }
             } else {
-                setRecipeVideo(((RecipeStepsNav) getContext()).getRecipes());
-                setIndex(((RecipeStepsNav) getContext()).getIndex());
-                setPath(mRecipeSteps);
+                twoPanes = false;
+                if (mRecipeSteps != null) {
+                    setPath(mRecipeSteps);
+                } else {
+                    setRecipeVideo(((RecipeStepsNav) getContext()).getRecipes());
+                    setIndex(((RecipeStepsNav) getContext()).getIndex());
+                    setPath(mRecipeSteps);
+                }
+            }
+
+            if (path.equals("")) {
+                if (!mRecipeSteps.get(index).thumbnailURL.equals("")) {
+                    if (mRecipeSteps.get(index).thumbnailURL.contains(".mp4")) {
+                        //image key is handled as an image for CardView in RecipeCardAdapter class @ line 68
+                        path = mRecipeSteps.get(index).thumbnailURL.toString();
+                        imageView.setVisibility(View.INVISIBLE);
+                        videoView.setVisibility(View.VISIBLE);
+                        videoPlayer(rootView);
+                    } else
+                        Picasso.with(getContext()).load(mRecipeSteps.get(index).thumbnailURL).into(imageView);
+                } else {
+                    imageView.setVisibility(View.VISIBLE);
+                    videoView.setVisibility(View.GONE);
+                }
+            } else {
+                imageView.setVisibility(View.INVISIBLE);
+                videoView.setVisibility(View.VISIBLE);
+                videoPlayer(rootView);
             }
         }
 
-        if (path.equals("")) {Log.i("tagging","empty");
-            imageView.setVisibility(View.VISIBLE);
-            videoView.setVisibility(View.INVISIBLE);
-        } else {
-            imageView.setVisibility(View.INVISIBLE);
-            videoView.setVisibility(View.VISIBLE);
-            videoPlayer(rootView);
-        }
         return rootView;
     }
 
@@ -103,8 +135,20 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
             setPath(mRecipeSteps);
         }
         if (path.equals("")) {
-            imageView.setVisibility(View.VISIBLE);
-            videoView.setVisibility(View.GONE);
+            if (!mRecipeSteps.get(index).thumbnailURL.equals("")) {
+                if (mRecipeSteps.get(index).thumbnailURL.contains(".mp4")) {
+                    //image key is handled as an image for CardView in RecipeCardAdapter class @ line 68
+                    path = mRecipeSteps.get(index).thumbnailURL.toString();
+                    imageView.setVisibility(View.INVISIBLE);
+                    videoView.setVisibility(View.VISIBLE);
+                    videoPlayer(rootView);
+                } else
+                    Picasso.with(getContext()).load(mRecipeSteps.get(index).thumbnailURL).into(imageView);
+            } else {
+                imageView.setVisibility(View.VISIBLE);
+                videoView.setVisibility(View.INVISIBLE);
+            }
+
         } else {
             imageView.setVisibility(View.GONE);
             videoView.setVisibility(View.VISIBLE);
@@ -136,6 +180,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
 
         SimpleExoPlayerView playerView = view.findViewById(R.id.player_view);
+
         playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
 
@@ -144,9 +189,11 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
         MediaSource videoSource = new ExtractorMediaSource(Uri.parse(path), dataSourceFactory, extractorsFactory, null, null);
-
+        if (playerPosition != 0)
+            player.seekTo(playerPosition);
         player.addListener(this);
         player.prepare(videoSource);
+
         playerView.requestFocus();
         player.setPlayWhenReady(true);
     }
@@ -154,24 +201,24 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onPause() {
         super.onPause();
-        if (player != null) {
-            player.setPlayWhenReady(false);
-        }
+        player.setPlayWhenReady(false);
+        playerPosition = player.getCurrentPosition();
+        player.release();
     }
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
-
+        player.setPlayWhenReady(true);
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
+        player.setPlayWhenReady(true);
     }
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
-
+        player.setPlayWhenReady(true);
     }
 
     @Override
@@ -202,14 +249,18 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(!path.equals(""))
-            player.release();
+
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(!path.equals(""))
-            player.release();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        player.release();
     }
 }

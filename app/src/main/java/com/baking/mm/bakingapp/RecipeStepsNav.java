@@ -1,5 +1,6 @@
 package com.baking.mm.bakingapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -53,7 +54,6 @@ public class RecipeStepsNav extends AppCompatActivity {
     ArrayList<RecipeSteps> recipeSteps;
     private String recipeName;
     int index = 0;
-
     TextView counter;
     Button next;
     Button previous;
@@ -66,14 +66,15 @@ public class RecipeStepsNav extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPESTEPS_KEY, recipeSteps);
-        outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY,recipeName);
-        outState.putInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY,index);
+        outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY, recipeName);
+        outState.putInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY, index);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_step_browsing);
+
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPENAME_KEY)) {
@@ -83,22 +84,22 @@ public class RecipeStepsNav extends AppCompatActivity {
                 getSupportActionBar().setTitle(recipeName);
             }
         } else {
-        Intent myIntent = getIntent();
+            Intent myIntent = getIntent();
 
-        Bundle extras = myIntent.getExtras();
-        if (extras != null) {
-            if (extras.containsKey("name")) {
-                recipeName = myIntent.getStringExtra("name");
-                getSupportActionBar().setTitle(recipeName);
-            }
-            if (extras.containsKey("steps")) {
-                recipeSteps = myIntent.getParcelableArrayListExtra("steps");
-            }
-            if (extras.containsKey("clicked_item")) {
-                index = myIntent.getIntExtra("clicked_item", 0);
+            Bundle extras = myIntent.getExtras();
+            if (extras != null) {
+                if (extras.containsKey("name")) {
+                    recipeName = myIntent.getStringExtra("name");
+                    getSupportActionBar().setTitle(recipeName);
+                }
+                if (extras.containsKey("steps")) {
+                    recipeSteps = myIntent.getParcelableArrayListExtra("steps");
+                }
+                if (extras.containsKey("clicked_item")) {
+                    index = myIntent.getIntExtra("clicked_item", 0);
+                }
             }
         }
-    }
 
         final RecipeMediaFragment recipeMediaFragment = new RecipeMediaFragment();
         recipeMediaFragment.setRecipeVideo(recipeSteps);
@@ -107,58 +108,68 @@ public class RecipeStepsNav extends AppCompatActivity {
         final RecipeStepFragment recipeStepsFragment = new RecipeStepFragment();
         recipeStepsFragment.setRecipeStep(recipeSteps);
         recipeStepsFragment.setIndex(index);
-
-        counter = findViewById(R.id.tv_steps_counter);
-        counter.setText(String.valueOf(index+1)+"/"+recipeSteps.size());
-        next = findViewById(R.id.btn_next);
-        previous = findViewById(R.id.btn_prev);
-
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(index < recipeSteps.size()-1) {
-                    index++;
-                } else {
-                    index = 0;
-                }
-
-                recipeStepsFragment.setIndex(index);
-                recipeStepsFragment.changeFragment();
-                recipeMediaFragment.setIndex(index);
-                recipeMediaFragment.changeFragment();
-                counter.setText(String.valueOf(index+1)+"/"+recipeSteps.size());
-            }
-        });
-        previous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(index > 0) {
-                    index--;
-                } else {
-                    index = recipeSteps.size()-1;
-                }
-
-                recipeStepsFragment.setIndex(index);
-                recipeStepsFragment.changeFragment();
-                recipeMediaFragment.setIndex(index);
-                recipeMediaFragment.changeFragment();
-                counter.setText(String.valueOf(index+1)+"/"+recipeSteps.size());
-            }
-        });
-
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+            this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        } else {
+            counter = findViewById(R.id.tv_steps_counter);
+            counter.setText(String.valueOf(index + 1) + "/" + recipeSteps.size());
+            next = findViewById(R.id.btn_next);
+            previous = findViewById(R.id.btn_prev);
+
+            next.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (index < recipeSteps.size() - 1) {
+                        index++;
+                    } else {
+                        index = 0;
+                    }
+
+                    recipeStepsFragment.setIndex(index);
+                    recipeStepsFragment.changeFragment();
+                    recipeMediaFragment.setIndex(index);
+                    recipeMediaFragment.changeFragment();
+                    counter.setText(String.valueOf(index + 1) + "/" + recipeSteps.size());
+                }
+            });
+            previous.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (index > 0) {
+                        index--;
+                    } else {
+                        index = recipeSteps.size() - 1;
+                    }
+
+                    recipeStepsFragment.setIndex(index);
+                    recipeStepsFragment.changeFragment();
+                    recipeMediaFragment.setIndex(index);
+                    recipeMediaFragment.changeFragment();
+                    counter.setText(String.valueOf(index + 1) + "/" + recipeSteps.size());
+                }
+            });
+            fragmentManager.beginTransaction()
+                    .replace(R.id.step_container, recipeStepsFragment).commit();
+        }
 
         fragmentManager.beginTransaction()
                 .replace(R.id.media_container, recipeMediaFragment).commit();
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.step_container, recipeStepsFragment).commit();
     }
 
-    public List<RecipeSteps> getRecipes(){
+    public List<RecipeSteps> getRecipes() {
         return recipeSteps;
     }
-    public int getIndex(){
+
+    public int getIndex() {
         return index;
     }
 }
