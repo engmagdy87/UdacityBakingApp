@@ -45,7 +45,7 @@ public class MainActivityTest {
         onView(withText("Brownies")).check(matches(isDisplayed()));
 
     }
-//
+
     @Test
     public void checkVideoPlayerAppear() {
         onView(ViewMatchers.withId(R.id.recyclerview_recipes)).perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));

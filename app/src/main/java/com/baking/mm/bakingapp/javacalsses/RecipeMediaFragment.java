@@ -61,7 +61,9 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     String path;
     View rootView;
     View rootLayout;
+    public RecipeMediaFragment() {
 
+    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -249,13 +251,11 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onDestroy() {
         super.onDestroy();
-
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
     }
 
     @Override

@@ -57,6 +57,9 @@ public class RecipeStepsNav extends AppCompatActivity {
     TextView counter;
     Button next;
     Button previous;
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    RecipeMediaFragment recipeMediaFragment;
+    RecipeStepFragment recipeStepsFragment;
 
     private static final String ONSAVEINSTANCESTATE_RECIPESTEPS_KEY = "steps";
     private static final String ONSAVEINSTANCESTATE_STEP_INDEX_KEY = "index";
@@ -68,13 +71,13 @@ public class RecipeStepsNav extends AppCompatActivity {
         outState.putParcelableArrayList(ONSAVEINSTANCESTATE_RECIPESTEPS_KEY, recipeSteps);
         outState.putString(ONSAVEINSTANCESTATE_RECIPENAME_KEY, recipeName);
         outState.putInt(ONSAVEINSTANCESTATE_STEP_INDEX_KEY, index);
+
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_step_browsing);
-
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ONSAVEINSTANCESTATE_RECIPENAME_KEY)) {
@@ -101,14 +104,14 @@ public class RecipeStepsNav extends AppCompatActivity {
             }
         }
 
-        final RecipeMediaFragment recipeMediaFragment = new RecipeMediaFragment();
+        recipeMediaFragment = new RecipeMediaFragment();
         recipeMediaFragment.setRecipeVideo(recipeSteps);
         recipeMediaFragment.setIndex(index);
 
-        final RecipeStepFragment recipeStepsFragment = new RecipeStepFragment();
+        recipeStepsFragment = new RecipeStepFragment();
         recipeStepsFragment.setRecipeStep(recipeSteps);
         recipeStepsFragment.setIndex(index);
-        FragmentManager fragmentManager = getSupportFragmentManager();
+
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 

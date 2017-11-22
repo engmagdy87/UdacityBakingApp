@@ -26,10 +26,6 @@ public class RecipeStepFragment extends Fragment {
     TextView textView;
     public int index;
 
-    public RecipeStepFragment() {
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
