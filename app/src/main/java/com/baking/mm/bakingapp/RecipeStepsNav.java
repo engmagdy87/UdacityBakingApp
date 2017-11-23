@@ -30,7 +30,7 @@ public class RecipeStepsNav extends AppCompatActivity {
     ArrayList<RecipeSteps> recipeSteps;
     private String recipeName;
     public long playerPosition = 0;
-    public String path="";
+    public String path = "";
     int index = 0;
     TextView counter;
     Button next;
@@ -85,7 +85,7 @@ public class RecipeStepsNav extends AppCompatActivity {
             }
         }
 
-        recipeMediaFragment = new RecipeMediaFragment(playerPosition,path);
+        recipeMediaFragment = new RecipeMediaFragment(playerPosition, path);
         recipeMediaFragment.setRecipeVideo(recipeSteps);
         recipeMediaFragment.setIndex(index);
 
@@ -123,7 +123,7 @@ public class RecipeStepsNav extends AppCompatActivity {
             previous.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    index = index > 0 ? index - 1 : recipeSteps.size() -1;
+                    index = index > 0 ? index - 1 : recipeSteps.size() - 1;
 
                     recipeStepsFragment.setIndex(index);
                     recipeStepsFragment.changeFragment();
@@ -135,9 +135,9 @@ public class RecipeStepsNav extends AppCompatActivity {
             fragmentManager.beginTransaction()
                     .replace(R.id.step_container, recipeStepsFragment).commit();
         }
-
-        fragmentManager.beginTransaction()
-                .replace(R.id.media_container, recipeMediaFragment).commit();
+        if (savedInstanceState == null)
+            fragmentManager.beginTransaction()
+                    .replace(R.id.media_container, recipeMediaFragment).commit();
 
     }
 

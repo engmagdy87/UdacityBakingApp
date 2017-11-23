@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -45,6 +46,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,15 +55,16 @@ import java.util.List;
 
 public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventListener {
     public List<RecipeSteps> mRecipeSteps;
-    SimpleExoPlayerView videoView;
-    ImageView imageView;
-    public long playerPosition = 0;
+    static SimpleExoPlayerView videoView;
+    static ImageView imageView;
+    static long playerPosition;
     public int index;
     private boolean twoPanes;
-    SimpleExoPlayer player;
+    static SimpleExoPlayer player;
     String path = "";
-    View rootView;
+    static View rootView;
     View rootLayout;
+    static Context mContext;
 
     @SuppressLint("ValidFragment")
     public RecipeMediaFragment(long playerPosition, String path) {
@@ -73,6 +76,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
 
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_media, container, false);
@@ -80,25 +84,27 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         videoView = rootView.findViewById(R.id.player_view);
         imageView = rootView.findViewById(R.id.image_view);
 
-        if (rootLayout.findViewById(R.id.ll_two_panes) != null) {
-            twoPanes = true;
-            if (mRecipeSteps != null) {
-                setPath(mRecipeSteps);
+
+            if (rootLayout.findViewById(R.id.ll_two_panes) != null) {
+                twoPanes = true;
+                if (mRecipeSteps != null) {
+                    setPath(mRecipeSteps);
+                } else {
+                    setRecipeVideo(((RecipeDetails) getContext()).getRecipes());
+                    setIndex(((RecipeDetails) getContext()).getIndex());
+                    setPath(mRecipeSteps);
+                }
             } else {
-                setRecipeVideo(((RecipeDetails) getContext()).getRecipes());
-                setIndex(((RecipeDetails) getContext()).getIndex());
-                setPath(mRecipeSteps);
+                twoPanes = false;
+                if (mRecipeSteps != null) {
+                    setPath(mRecipeSteps);
+                } else {
+                    setRecipeVideo(((RecipeStepsNav) getContext()).getRecipes());
+                    setIndex(((RecipeStepsNav) getContext()).getIndex());
+                    setPath(mRecipeSteps);
+                }
             }
-        } else {
-            twoPanes = false;
-            if (mRecipeSteps != null) {
-                setPath(mRecipeSteps);
-            } else {
-                setRecipeVideo(((RecipeStepsNav) getContext()).getRecipes());
-                setIndex(((RecipeStepsNav) getContext()).getIndex());
-                setPath(mRecipeSteps);
-            }
-        }
+
 
         if (path.equals("")) {
             if (!mRecipeSteps.get(index).thumbnailURL.equals("")) {
@@ -106,7 +112,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
                     imageView.setVisibility(View.VISIBLE);
                     videoView.setVisibility(View.GONE);
                 } else
-                    Picasso.with(getContext()).load(mRecipeSteps.get(index).thumbnailURL).into(imageView);
+                    Picasso.with(mContext).load(mRecipeSteps.get(index).thumbnailURL).into(imageView);
             } else {
                 imageView.setVisibility(View.VISIBLE);
                 videoView.setVisibility(View.GONE);
@@ -121,8 +127,8 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     }
 
     public void changeFragment() {
-        this.onDestroy();
         playerPosition = 0;
+
         if (mRecipeSteps != null) {
             setPath(mRecipeSteps);
         } else {
@@ -136,14 +142,14 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
                     imageView.setVisibility(View.VISIBLE);
                     videoView.setVisibility(View.GONE);
                 } else
-                    Picasso.with(getContext()).load(mRecipeSteps.get(index).thumbnailURL).into(imageView);
+                    Picasso.with(mContext).load(mRecipeSteps.get(index).thumbnailURL).into(imageView);
             } else {
                 imageView.setVisibility(View.VISIBLE);
                 videoView.setVisibility(View.INVISIBLE);
             }
 
         } else {
-            imageView.setVisibility(View.GONE);
+            imageView.setVisibility(View.INVISIBLE);
             videoView.setVisibility(View.VISIBLE);
             videoPlayer(rootView);
         }
@@ -170,14 +176,14 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         TrackSelector trackSelector = new DefaultTrackSelector();
         LoadControl loadControl = new DefaultLoadControl();
 
-        player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+        player = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
 
         SimpleExoPlayerView playerView = view.findViewById(R.id.player_view);
 
         playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
 
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), "Android-ExoPlayer");
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, "Android-ExoPlayer");
 
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
@@ -200,6 +206,7 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
                 ((RecipeDetails) getActivity()).playerPosition = player.getCurrentPosition();
                 ((RecipeDetails) getActivity()).path = path;
             } else {
+//                playerPosition = player.getCurrentPosition();
                 ((RecipeStepsNav) getActivity()).playerPosition = player.getCurrentPosition();
                 ((RecipeStepsNav) getActivity()).path = path;
             }
@@ -262,5 +269,11 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
         super.onStop();
         if (player != null)
             player.release();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 }
