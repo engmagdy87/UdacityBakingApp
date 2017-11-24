@@ -128,6 +128,13 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
 
     public void changeFragment() {
         playerPosition = 0;
+        if (player != null) {
+            player.setVideoListener(null);
+            player.setVideoDebugListener(null);
+            player.setAudioDebugListener(null);
+            player.release();
+            player = null;
+        }
 
         if (mRecipeSteps != null) {
             setPath(mRecipeSteps);
@@ -206,7 +213,6 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
                 ((RecipeDetails) getActivity()).playerPosition = player.getCurrentPosition();
                 ((RecipeDetails) getActivity()).path = path;
             } else {
-//                playerPosition = player.getCurrentPosition();
                 ((RecipeStepsNav) getActivity()).playerPosition = player.getCurrentPosition();
                 ((RecipeStepsNav) getActivity()).path = path;
             }
