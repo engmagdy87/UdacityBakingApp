@@ -205,6 +205,14 @@ public class RecipeMediaFragment extends Fragment implements ExoPlayer.EventList
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (player != null)
+            player.release();
+        videoPlayer(rootView);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         if (player != null) {
